@@ -8,6 +8,37 @@ $ErrorActionPreference = "Stop"
 $root = $PSScriptRoot
 $project = Join-Path $root "HopperChains.csproj"
 $manifestPath = Join-Path $root "manifest.xml"
+$readme = Join-Path $root "README.md"
+$license = Join-Path $root "LICENSE"
+$modName = "HopperChains"
+
+if (-not (Test-Path $manifestPath)) {
+    throw "manifest.xml was not found in '$root'."
+}
+if (-not (Test-Path $readme)) {
+    throw "README.md was not found in '$root'."
+}
+if (-not (Test-Path $license)) {
+    throw "LICENSE was not found in '$root'."
+}
+
+# Keep the manifest, project, tag, and ZIP version in sync.
+[xml]$manifestXml = Get-Content $manifestPath
+[xml]$projectXml = Get-Content $project
+$manifestVersionNode = $manifestXml.SelectSingleNode("/Manifest/ModVersion")
+$projectVersionNode = $projectXml.SelectSingleNode("//Version")
+$manifestVersion = if ($manifestVersionNode) { $manifestVersionNode.InnerText.Trim() } else { "" }
+$projectVersion = if ($projectVersionNode) { $projectVersionNode.InnerText.Trim() } else { "" }
+
+if (-not $manifestVersion) {
+    throw "manifest.xml has no <ModVersion>."
+}
+if (-not $projectVersion) {
+    throw "HopperChains.csproj has no <Version>."
+}
+if ($manifestVersion -ne $projectVersion) {
+    throw "Version mismatch: manifest.xml is '$manifestVersion' but HopperChains.csproj is '$projectVersion'."
+}
 
 if (-not $GameDir) {
     if ($env:PROBABLY_STOLEN_DIR) {
@@ -50,36 +81,44 @@ if (-not $Dotnet -or -not (Test-Path $Dotnet)) {
     throw "dotnet was not found. Install the .NET 8 SDK or pass -Dotnet `"<path to dotnet.exe>`"."
 }
 
-Write-Host "Building HopperChains..."
+Write-Host "Building $modName v$manifestVersion..."
 & $Dotnet build $project -c Release --nologo "-p:GameDir=$GameDir"
 if ($LASTEXITCODE -ne 0) {
     throw "dotnet build failed with exit code $LASTEXITCODE."
 }
 
-$assembly = Join-Path $root "bin\Release\netstandard2.1\HopperChains.dll"
+$assembly = Join-Path $root "bin\Release\netstandard2.1\$modName.dll"
 if (-not (Test-Path $assembly)) {
     throw "Build succeeded but '$assembly' was not produced."
 }
 
-$dist = Join-Path $root "dist\HopperChains"
-if (Test-Path $dist) {
-    Remove-Item $dist -Recurse -Force
+$distRoot = Join-Path $root "dist"
+$package = Join-Path $distRoot $modName
+$zip = Join-Path $distRoot "$modName-v$manifestVersion.zip"
+
+if (Test-Path $distRoot) {
+    Remove-Item $distRoot -Recurse -Force
 }
 
-New-Item -ItemType Directory -Force -Path $dist | Out-Null
-Copy-Item $assembly $dist
-Copy-Item $manifestPath $dist
+New-Item -ItemType Directory -Force -Path $package | Out-Null
+Copy-Item $assembly $package
+Copy-Item $manifestPath $package
+Copy-Item $readme $package
+Copy-Item $license $package
 
-Write-Host "Package: $dist"
+Compress-Archive -Path $package -DestinationPath $zip -CompressionLevel Optimal
+
+Write-Host "Package folder: $package"
+Write-Host "Release ZIP: $zip"
 
 if ($Install) {
-    $target = Join-Path $GameDir "Mods\HopperChains"
+    $target = Join-Path $GameDir "Mods\$modName"
     if (Test-Path $target) {
         Remove-Item $target -Recurse -Force
     }
 
     New-Item -ItemType Directory -Force -Path $target | Out-Null
-    Copy-Item (Join-Path $dist "*") $target -Recurse
+    Copy-Item (Join-Path $package "*") $target -Recurse
     Write-Host "Installed to: $target"
     Write-Host "Enable/trust 'Hopper Chains' in the Mods screen, then restart the game."
 }

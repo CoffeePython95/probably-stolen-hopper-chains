@@ -2,6 +2,21 @@
 
 Makes chains of **Probably Stolen** hoppers work.
 
+## Download
+
+Get the latest player-ready build from
+[GitHub Releases](https://github.com/CoffeePython95/probably-stolen-hopper-chains/releases/latest).
+
+1. Download `HopperChains-v0.1.0.zip`.
+2. Extract the `HopperChains` folder into `<game>\Mods`. The folder must contain
+   `manifest.xml` and `HopperChains.dll` directly.
+3. Open the game's **Mods** screen, enable and trust **Hopper Chains**, then
+   restart the game.
+
+Requires **Probably Stolen `0.46D`**.
+
+## What it does
+
 Vanilla hoppers move items exactly one step: an intake hopper in container A,
 linked to an outlet hopper in container B, empties A into B. If B contains a
 second intake hopper linked to an outlet in container C, the game does not run
@@ -68,14 +83,28 @@ The game's **Mods** screen shows:
   soon as it reaches a hopper that already ran in the same transfer.
 - **Log chain transfers** – writes each hop to `Player.log`.
 
-## Build and install
+## Build from source
+
+Developers need a local game install for the managed assemblies:
+
+```powershell
+.\build.ps1 -GameDir "E:\SteamLibrary\steamapps\common\Probably Stolen"
+```
+
+This produces:
+
+```text
+dist\HopperChains\                 package folder
+dist\HopperChains-v0.1.0.zip       player-ready release ZIP
+```
+
+Add `-Install` to also copy the package into the game's `Mods` folder:
 
 ```powershell
 .\build.ps1 -GameDir "E:\SteamLibrary\steamapps\common\Probably Stolen" -Install
 ```
 
-Then open the game's **Mods** screen, enable and trust **Hopper Chains**, and
-restart the game. The loader applies the Harmony patch automatically.
+See [`RELEASING.md`](RELEASING.md) for the GitHub release checklist.
 
 ## Compatibility
 
@@ -84,3 +113,7 @@ Built for game version `0.46D`. The mod patches the public
 with the intake window's **Transfer now** button, the outlet window,
 `On Add`/`On Move` scheduling, and the nightly hopper passes. Hoppers still do
 not run while you are outside the store, matching vanilla behaviour.
+
+## License
+
+MIT. See [`LICENSE`](LICENSE).

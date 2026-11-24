@@ -7,6 +7,8 @@
     <Nullable>disable</Nullable>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <Version>0.1.0</Version>
+    <DebugType>none</DebugType>
+    <Deterministic>true</Deterministic>
 
     <GameDir Condition="'$(GameDir)' == ''">E:\SteamLibrary\steamapps\common\Probably Stolen</GameDir>
     <ManagedDir>$(GameDir)\Probably Stolen_Data\Managed</ManagedDir>
