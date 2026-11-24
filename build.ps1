@@ -81,7 +81,7 @@ if (-not $Dotnet -or -not (Test-Path $Dotnet)) {
     throw "dotnet was not found. Install the .NET 8 SDK or pass -Dotnet `"<path to dotnet.exe>`"."
 }
 
-Write-Host "Building $modName v$manifestVersion..."
+Write-Host "Building Hopper Chains..."
 & $Dotnet build $project -c Release --nologo "-p:GameDir=$GameDir"
 if ($LASTEXITCODE -ne 0) {
     throw "dotnet build failed with exit code $LASTEXITCODE."
@@ -93,23 +93,23 @@ if (-not (Test-Path $assembly)) {
 }
 
 $distRoot = Join-Path $root "dist"
-$package = Join-Path $distRoot $modName
-$zip = Join-Path $distRoot "$modName-v$manifestVersion.zip"
+$dist = Join-Path $distRoot $modName
+$archive = Join-Path $distRoot "$modName-v$manifestVersion.zip"
 
 if (Test-Path $distRoot) {
     Remove-Item $distRoot -Recurse -Force
 }
 
-New-Item -ItemType Directory -Force -Path $package | Out-Null
-Copy-Item $assembly $package
-Copy-Item $manifestPath $package
-Copy-Item $readme $package
-Copy-Item $license $package
+New-Item -ItemType Directory -Force -Path $dist | Out-Null
+Copy-Item $assembly $dist
+Copy-Item $manifestPath $dist
+Copy-Item $readme $dist
+Copy-Item $license $dist
 
-Compress-Archive -Path $package -DestinationPath $zip -CompressionLevel Optimal
+Compress-Archive -Path $dist -DestinationPath $archive -CompressionLevel Optimal
 
-Write-Host "Package folder: $package"
-Write-Host "Release ZIP: $zip"
+Write-Host "Package: $dist"
+Write-Host "Release archive: $archive"
 
 if ($Install) {
     $target = Join-Path $GameDir "Mods\$modName"
@@ -118,7 +118,7 @@ if ($Install) {
     }
 
     New-Item -ItemType Directory -Force -Path $target | Out-Null
-    Copy-Item (Join-Path $package "*") $target -Recurse
+    Copy-Item (Join-Path $dist "*") $target -Recurse
     Write-Host "Installed to: $target"
     Write-Host "Enable/trust 'Hopper Chains' in the Mods screen, then restart the game."
 }

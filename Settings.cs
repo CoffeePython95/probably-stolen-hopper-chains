@@ -5,11 +5,11 @@ namespace HopperChains;
 /// <summary>
 /// Settings shown in the game's Mods screen.
 /// </summary>
-internal static class ModSettings
+internal static class Settings
 {
-    private const string GeneralSection = "General";
-    private const string ChainSection = "Chaining";
-    private const string DiagnosticSection = "Diagnostics";
+    private const string SectionGeneral = "General";
+    private const string SectionChaining = "Chaining";
+    private const string SectionDiagnostics = "Diagnostics";
 
     private static ConfigEntry<bool> enabled;
     private static ConfigEntry<bool> requireOnAdd;
@@ -23,21 +23,21 @@ internal static class ModSettings
         enabled = config.Define(
             "enabled",
             true,
-            GeneralSection,
+            SectionGeneral,
             () => "Enabled",
             () => "Forward items through chains of linked hoppers.");
 
         requireOnAdd = config.Define(
             "require_on_add",
             false,
-            ChainSection,
+            SectionChaining,
             () => "Only chain hoppers with 'On Add' enabled",
             () => "On: a receiving hopper continues the chain only when its 'On Add' toggle is on. Off: every linked intake hopper in the receiving container continues the chain. Off is what makes chains work without extra setup.");
 
         maxChainLength = config.Define(
             "max_chain_length",
             32,
-            ChainSection,
+            SectionChaining,
             () => "Maximum chain depth",
             1,
             128,
@@ -46,7 +46,7 @@ internal static class ModSettings
         logTransfers = config.Define(
             "log_transfers",
             false,
-            DiagnosticSection,
+            SectionDiagnostics,
             () => "Log chain transfers",
             () => "Write each hopper-to-hopper handoff to Player.log. Useful when setting up a long chain.");
     }

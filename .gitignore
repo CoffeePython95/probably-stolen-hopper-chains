@@ -12,6 +12,8 @@ artifacts/
 
 # Local analysis artifacts
 docs/decompiled/
+
+# Third-party reference source (never commit)
 reference/
 
 # OS/editor noise

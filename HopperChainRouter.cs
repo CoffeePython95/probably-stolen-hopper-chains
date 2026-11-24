@@ -25,7 +25,7 @@ internal static class HopperChainRouter
 
     internal static void CascadeFrom(GameItem intake)
     {
-        if (!ModEntry.Enabled || !ModSettings.Enabled || cascading)
+        if (!ModEntry.Enabled || !Settings.Enabled || cascading)
         {
             return;
         }
@@ -52,7 +52,7 @@ internal static class HopperChainRouter
 
     private static void RunChain(GameItem intake)
     {
-        int maxDepth = ModSettings.MaxChainLength;
+        int maxDepth = Settings.MaxChainLength;
         Queue<(GameItem item, int depth)> queue = new Queue<(GameItem, int)>();
         HashSet<GameItem> visited = new HashSet<GameItem>();
         queue.Enqueue((intake, 0));
@@ -79,7 +79,7 @@ internal static class HopperChainRouter
                     continue;
                 }
 
-                if (ModSettings.RequireOnAdd && !HopperHelper.IsOnAdd(next))
+                if (Settings.RequireOnAdd && !HopperHelper.IsOnAdd(next))
                 {
                     continue;
                 }
@@ -108,7 +108,7 @@ internal static class HopperChainRouter
                 int nextDepth = depth + 1;
                 queue.Enqueue((next, nextDepth));
 
-                if (ModSettings.LogTransfers)
+                if (Settings.LogTransfers)
                 {
                     ModEntry.Log?.Log("Chain hop " + nextDepth + ": " + Label(next) + " moved " + moved + " unit(s).");
                 }

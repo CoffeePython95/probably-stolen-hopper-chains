@@ -19,9 +19,10 @@ public sealed class ModEntry : IMod
     public void Init(ModManifest manifest)
     {
         Log = new ModLog(manifest);
+
         try
         {
-            ModSettings.Initialize();
+            Settings.Initialize();
         }
         catch (Exception ex)
         {
@@ -37,41 +38,18 @@ public sealed class ModEntry : IMod
         }
 
         Enabled = true;
-        ModHook.OnGameLoadedNormal += OnGameLoaded;
-        Log.Log("HopperChains enabled.");
+        Log.Log("Hopper Chains enabled.");
     }
 
     public void OnDisable()
     {
-        Enabled = false;
-        ModHook.OnGameLoadedNormal -= OnGameLoaded;
-        Log.Log("HopperChains disabled.");
-    }
-
-    private static void OnGameLoaded()
-    {
-        if (!Enabled || !PlayerStore.HasInstance)
+        if (!Enabled)
         {
             return;
         }
 
-        try
-        {
-            int hoppers = 0;
-            foreach (GameItem item in PlayerStore.Instance.FindAllItem())
-            {
-                if (HopperHelper.IsHopper(item) && GeneralHelper.IsItemOwned(item))
-                {
-                    hoppers++;
-                }
-            }
-
-            Log.Log("Store loaded; " + hoppers + " hopper(s) found.");
-        }
-        catch (Exception ex)
-        {
-            WarnOnce("Could not inspect the store: " + ex.Message);
-        }
+        Enabled = false;
+        Log.Log("Hopper Chains disabled.");
     }
 
     internal static void WarnOnce(string message)

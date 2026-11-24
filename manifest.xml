@@ -4,7 +4,7 @@
   <Name>Hopper Chains</Name>
   <Author>PtrkPtrk</Author>
   <ModVersion>0.1.0</ModVersion>
-  <Description>Lets chains of hoppers work: when an intake hopper delivers items into a container, any linked intake hopper in that container runs as well, so items continue through the whole chain instead of stopping in the first container. Vanilla blocks the On Add trigger while a hopper transfer is in progress, so chains only ever moved one step. The mod follows the chain with a loop guard and the hoppers' own order, filters and keep settings.</Description>
+  <Description>Makes chains of hoppers work. When an intake hopper delivers items into a container, linked intake hoppers in that container run too, so items continue through the whole chain. Respects filters, keep amounts and run order, with loop protection.</Description>
 
   <GameVersions>
     <Version>0.46D</Version>
