@@ -98,42 +98,8 @@ Then enable/trust the mod in the game's **Mods** screen and restart. Pass
 `-GameDir` if the game is installed elsewhere.
 
 The build uses the game's own `Assembly-CSharp.dll`, so it cannot be compiled
-on a machine without the game installed. The release ZIP is built locally and
-uploaded to GitHub Releases. There is no GitHub Actions build workflow.
-
-## Releasing
-
-See [`RELEASING.md`](RELEASING.md) for the exact source and GitHub release flow.
+on a machine without the game installed.
 
 ## License
 
 [MIT](LICENSE)
-
-## Implementation notes
-
-Vanilla hoppers move items exactly one step: an intake hopper in container A,
-linked to an outlet hopper in container B, empties A into B. If B contains a
-second intake hopper linked to an outlet in C, the game does not run that
-second hopper when the first one delivers.
-
-The reason is the game's `On Add` path. `HopperHelper.Watch` raises the callback
-when items are added to a container, but `HopperHelper.Schedule` refuses to
-queue while a hopper transfer is running:
-
-```csharp
-// HopperHelper.Schedule
-if (!batchRunning && !transferring && intake != null && !IsAway())
-```
-
-An intake transfer sets `transferring` for the whole move, so the callback for
-the receiving hopper is dropped. Manual and machine additions happen outside a
-hopper transfer, which is why they do trigger the next hopper.
-
-The mod postfixes `HopperHelper.RunAndRecord` and, after a successful transfer,
-finds the linked intake hoppers in
-`FindOutlet(intake).parentInventory.childItems` and runs them. It repeats with a
-visited-hopper set and a maximum depth to stop loops. A prefix/finalizer on
-`HopperHelper.RunWindow` marks the nightly pass so a cascade stays inside the
-current run-order window and never runs a hopper backwards.
-
-See `MODDING.md` for general Probably Stolen modding information.
